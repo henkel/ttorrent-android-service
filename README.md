@@ -15,7 +15,7 @@ How to use
 To use ``ttorrent-android-service`` in your Android project, all you need is to
 declare the dependency.
 
-```json
+```groovy
 dependencies {
     compile 'de.sulaco.ttorrent:ttorrent-android-service:0.2.0'
 }
