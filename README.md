@@ -1,13 +1,12 @@
-ttorrent-android-service, a BitTorrent IntentService for Android
+ttorrent-android-service
 ================================================================
 
-[![Build Status](https://travis-ci.org/henkel/ttorrent-android-service.svg?branch=master)](https://travis-ci.org/henkel/ttorrent-android-service)
+[![Build Status](https://travis-ci.org/henkel/ttorrent-android-service.svg?branch=master)](https://travis-ci.org/henkel/ttorrent-android-service) [![Download](https://api.bintray.com/packages/henkel/maven/ttorrent-android-service/images/download.svg) ](https://bintray.com/henkel/maven/ttorrent-android-service/_latestVersion)
 
 Description
 -----------
 
-Android IntentService for downloading BitTorrent files. The service is based on ttorrent.
-
+BitTorrent IntentService for Android with focus on file download. The service is based on ttorrent.
 
 How to use
 ----------

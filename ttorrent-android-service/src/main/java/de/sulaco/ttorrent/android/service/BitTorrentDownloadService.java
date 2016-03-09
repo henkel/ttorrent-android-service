@@ -46,7 +46,7 @@ public class BitTorrentDownloadService extends IntentService {
         this(new Downloader());
     }
 
-    protected BitTorrentDownloadService(Downloader downloader) {
+    BitTorrentDownloadService(Downloader downloader) {
         super("BitTorrentDownload");
         this.downloader = downloader;
         this.downloader.setDownloadListener(downloadListener);
