@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.turn.ttorrent.core">
+        <application>
+            <service
+            android:name="de.sulaco.ttorrent.android.service.BitTorrentDownloadService"
+            android:exported="false"/>
+        </application>
+</manifest>
