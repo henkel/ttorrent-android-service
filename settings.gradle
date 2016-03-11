@@ -1,1 +1,1 @@
-include ':ttorrent-android-service'
+include ':library', ':examples:DownloadApp'
