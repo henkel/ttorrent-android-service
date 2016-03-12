@@ -6,8 +6,11 @@
     android:layout_height="match_parent"
     tools:context="de.sulaco.downloadapp.MainActivity">
 
-    <TextView
-        android:text="Hello World!"
+    <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/select_torrent"
+        android:id="@+id/btn_select_torrent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
