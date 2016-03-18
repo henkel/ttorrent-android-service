@@ -14,35 +14,31 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.utils;
+package de.sulaco.ttorrent.ttorrent;
 
 import com.turn.ttorrent.client.Client;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class DownloadStateObserver {
+import de.sulaco.ttorrent.DownloadState;
+
+public class ClientObserver {
     private long nameTimeOfLastActivity;
-    private boolean isCancelled = false;
-    private boolean isSomeoneIsWaiting = false;
+    private boolean isEnabled = true;
 
-    public synchronized int waitForCompletionOrTimeout(Client client, long timeoutMillis) {
-        isSomeoneIsWaiting = true;
-        int result = waitForCompletionOrTimeoutOrCancel(client, timeoutMillis);
-        isCancelled = false;
-        isSomeoneIsWaiting = false;
-        return result;
-    }
-
-    public synchronized void cancel() {
-        if (isSomeoneIsWaiting) {
-            isCancelled = true;
+    public synchronized void setEnabled(boolean enabled) {
+        if(enabled) {
+            isEnabled = true;
+        }
+        else {
+            isEnabled = false;
             notifyAll();
         }
     }
 
-    private synchronized int waitForCompletionOrTimeoutOrCancel(Client client, long timeoutMillis) {
-
+    /** Returns DownloadState.ABORTED if ClientObserver is disabled */
+    public synchronized int waitForCompletionOrTimeout(Client client, long timeoutMillis) {
         nameTimeOfLastActivity = System.nanoTime();
 
         client.addObserver(new Observer() {
@@ -71,34 +67,34 @@ public class DownloadStateObserver {
                     return;
                 }
 
-                synchronized (DownloadStateObserver.this) {
+                synchronized (ClientObserver.this) {
                     nameTimeOfLastActivity = System.nanoTime();
-                    DownloadStateObserver.this.notifyAll();
+                    ClientObserver.this.notifyAll();
                 }
             }
         });
 
-        while (!isCancelled) {
+        while (isEnabled && !Thread.currentThread().isInterrupted()) {
 
             long waitMillis = 0;
 
             if (timeoutMillis != 0) {
                 waitMillis = getMillisUntilTimeout(timeoutMillis);
                 if (waitMillis <= 0) {
-                    return DownloadState.TIMEOUT;
+                    return DownloadState.TIMED_OUT;
                 }
             }
 
             try {
                 wait(waitMillis);
             } catch (InterruptedException e) {
-                isCancelled = true;
+                Thread.currentThread().interrupt();
             }
 
             Client.ClientState clientState = client.getState();
 
             if (clientState == Client.ClientState.DONE) {
-                return DownloadState.COMPLETE;
+                return DownloadState.COMPLETED;
             } else if (clientState == Client.ClientState.ERROR) {
                 return DownloadState.ERROR;
             }
@@ -112,5 +108,4 @@ public class DownloadStateObserver {
         long deltaMillis = (currentNanoTime - nameTimeOfLastActivity) / 1000000;
         return timeoutMillis - deltaMillis;
     }
-
 }

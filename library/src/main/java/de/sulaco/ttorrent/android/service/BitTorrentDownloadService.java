@@ -19,12 +19,11 @@ package de.sulaco.ttorrent.android.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.sulaco.ttorrent.utils.DownloadListener;
-import de.sulaco.ttorrent.utils.Downloader;
+import de.sulaco.ttorrent.Downloader;
+import de.sulaco.ttorrent.ttorrent.TtorrentDownloader;
 
 /**
  * <p/>
@@ -38,110 +37,54 @@ import de.sulaco.ttorrent.utils.Downloader;
  */
 public class BitTorrentDownloadService extends IntentService {
 
-    private final AtomicInteger pendingAbortActionCounter = new AtomicInteger(0);
-    private final DownloadListener downloadListener = new DownloadServiceAdapter(this);
-    private final Downloader downloader;
+    private int pendingAbortCount = 0;
+    private Downloader downloader;
 
     public BitTorrentDownloadService() {
-        this(new Downloader());
-    }
-
-    BitTorrentDownloadService(Downloader downloader) {
         super("BitTorrentDownload");
-        this.downloader = downloader;
-        this.downloader.setDownloadListener(downloadListener);
+        setDownloader(new TtorrentDownloader());
     }
 
-    public static void requestDownload(Context context,
-                                       String torrentFile,
-                                       String destinationDirectory) {
-        context.startService(createDownloadIntent(context, torrentFile, destinationDirectory));
-    }
-
-    public static void requestAbort(Context context) {
-        context.startService(createAbortIntent(context));
-    }
-
-    static Intent createDownloadIntent(Context context,
-                                                 String torrentFile,
-                                                 String destinationDirectory) {
-        if (torrentFile == null) {
-            throw new NullPointerException("torrentFile must not be null");
-        }
-
-        if (destinationDirectory == null) {
-            throw new NullPointerException("destinationDirectory must not be null");
-        }
-
-        Intent intent = new Intent(context, BitTorrentDownloadService.class);
-        intent.setAction(BitTorrentIntentConstants.ACTION_DOWNLOAD);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DESTINATION_DIRECTORY, destinationDirectory);
-        return intent;
-    }
-
-    static Intent createAbortIntent(Context context) {
+    public static Intent createAbortIntent(Context context) {
         Intent intent = new Intent(context, BitTorrentDownloadService.class);
         intent.setAction(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD);
         return intent;
     }
 
-    static Intent createProgressIntent(String torrentFile, int progress) {
-        if (torrentFile == null) {
-            throw new NullPointerException("torrentFile must not be null");
-        }
-
-        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, progress);
-        return intent;
+    synchronized boolean isAbortPending() {
+        return pendingAbortCount > 0;
     }
 
-    static Intent createEndIntent(String torrentFile, int state) {
-        if (torrentFile == null) {
-            throw new NullPointerException("torrentFile must not be null");
-        }
-
-        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, state);
-        return intent;
-    }
-
-    void broadcastProgress(String torrentFile, int progress) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(
-                BitTorrentDownloadService.createProgressIntent(
-                        torrentFile,
-                        progress));
-    }
-
-    void broadcastEnd(String torrentFile, int state) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(
-                BitTorrentDownloadService.createEndIntent(
-                        torrentFile,
-                        state));
-    }
-
-    boolean hasPendingAbortActions() {
-        return pendingAbortActionCounter.get() > 0;
+    void setDownloader(Downloader downloader) {
+        this.downloader = downloader;
+        this.downloader.setDownloadListener(new LocalBroadcaster(this));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD)) {
-            pendingAbortActionCounter.incrementAndGet();
-            downloader.cancel();
+            synchronized (this) {
+                pendingAbortCount += 1;
+                downloader.setEnabled(false);
+            }
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD)) {
-            pendingAbortActionCounter.decrementAndGet();
+            synchronized (this) {
+                pendingAbortCount -= 1;
+                if(pendingAbortCount == 0) {
+                    downloader.setEnabled(true);
+                }
+            }
         }
-        else if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_DOWNLOAD)) {
+        else if (isAbortPending()) {
+            // skip intent
+        }
+        else if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_START_DOWNLOAD)) {
             final String torrentFile = intent.getStringExtra(
                     BitTorrentIntentConstants.EXTRA_TORRENT_FILE);
             final String destinationDirectory = intent.getStringExtra(

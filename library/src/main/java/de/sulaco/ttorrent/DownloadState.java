@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.utils;
+package de.sulaco.ttorrent;
 
 public final class DownloadState {
-    public final static int COMPLETE = 0;
-    public final static int ABORTED = 1;
-    public final static int ERROR = 2;
-    public final static int ERROR_TORRENT_FILE = 3;
-    public final static int ERROR_DESTINATION_DIR = 4;
-    public final static int TIMEOUT = 5;
+    public final static int COMPLETED = 1;
+    public final static int ABORTED = 2;
+    public final static int TIMED_OUT = 3;
+    public final static int ERROR = 4;
+    public final static int ERROR_TORRENT_FILE = 5;
+    public final static int ERROR_DESTINATION_DIR = 6;
 }

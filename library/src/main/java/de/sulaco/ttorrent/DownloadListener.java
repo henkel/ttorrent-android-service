@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.utils;
+package de.sulaco.ttorrent;
 
 public interface DownloadListener {
     void onDownloadStart(String torrentFile);
-    void onDownloadProgressUpdate(String torrentFile, int progress);
+    void onDownloadProgress(String torrentFile, int progress);
     void onDownloadEnd(String torrentFile, int downloadState);
 }

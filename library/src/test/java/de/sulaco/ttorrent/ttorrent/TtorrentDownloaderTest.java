@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.utils;
+package de.sulaco.ttorrent.ttorrent;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -41,12 +41,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import de.sulaco.ttorrent.DownloadListener;
+import de.sulaco.ttorrent.DownloadState;
+
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public final class DownloaderTest {
+public final class TtorrentDownloaderTest {
 
     private final static int RUN_COUNT = 1;
 
@@ -63,7 +66,7 @@ public final class DownloaderTest {
         return Arrays.asList(new Object[RUN_COUNT][]);
     }
 
-    public DownloaderTest() {
+    public TtorrentDownloaderTest() {
     }
 
     @BeforeClass
@@ -84,8 +87,8 @@ public final class DownloaderTest {
     @Test
     public void testNoDownloadSupervisor() {
         try {
-            Downloader downloader = new Downloader();
-            downloader.download(TORRENT_FILE, "dir");
+            TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
+            ttorrentDownloader.download(TORRENT_FILE, "dir");
             failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expectedException) {
         }
@@ -93,19 +96,19 @@ public final class DownloaderTest {
 
     @Test
     public void testDownloadNullTorrentFile() {
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(null, "dir");
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(null, "dir");
         Mockito.verify(downloadListener, Mockito.times(0)).onDownloadStart(Mockito.anyString());
     }
 
     @Test
     public void testDownloadNullDestinationDirectory() {
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(TORRENT_FILE, null);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(TORRENT_FILE, null);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
     }
@@ -113,10 +116,10 @@ public final class DownloaderTest {
     @Test
     public void testDownloadTorrentFileDoesNotExist() {
         final String torrentFile = "torrent_does_not_exist";
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(torrentFile, TEMPORARY_DIRECTORY);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(torrentFile, TEMPORARY_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(torrentFile);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, DownloadState.ERROR_TORRENT_FILE);
     }
@@ -124,12 +127,12 @@ public final class DownloaderTest {
     @Test
     public void testDownloadDestinationDoesNotExist() {
         final String destinationDirectory = "destination_does_not_exist";
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(TORRENT_FILE, destinationDirectory);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(TORRENT_FILE, destinationDirectory);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgressUpdate(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
     }
 
@@ -137,54 +140,54 @@ public final class DownloaderTest {
     public void testDownloadDestinationNotWritable() {
         File directory = new File(TEMPORARY_DIRECTORY);
         assertThat(directory.setWritable(false)).isTrue();
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
         assertThat(directory.setWritable(true)).isTrue();
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgressUpdate(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
     }
 
     @Test
     public void testDownloadResumeCompleted() {
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(TORRENT_FILE, CONTENT_DIRECTORY);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(TORRENT_FILE, CONTENT_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgressUpdate(TORRENT_FILE, 100);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETE);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(TORRENT_FILE, 100);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETED);
     }
 
     @Test
     public void testDownloadCorruptTorrentFile() {
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.download(CORRUPT_TORRENT_FILE, CONTENT_DIRECTORY);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(CORRUPT_TORRENT_FILE, CONTENT_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(CORRUPT_TORRENT_FILE);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(CORRUPT_TORRENT_FILE, DownloadState.ERROR_TORRENT_FILE);
     }
 
     @Test
     public void testDownloadNoTracker() {
-        Downloader downloader = new Downloader();
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
-        downloader.setTimeout(10 * 1000);
-        downloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.setTimeout(10 * 1000);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgressUpdate(Mockito.anyString(), Mockito.anyInt());
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.TIMEOUT);
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.TIMED_OUT);
     }
 
     @Test
     public void testDownloadNoTrackerCancel() {
-        final Downloader downloader = new Downloader();
+        final TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         final DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        downloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.setDownloadListener(downloadListener);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -193,12 +196,12 @@ public final class DownloaderTest {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                downloader.cancel();
+                ttorrentDownloader.setEnabled(false);
             }
         }).start();
-        downloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgressUpdate(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ABORTED);
     }
 
@@ -226,15 +229,15 @@ public final class DownloaderTest {
 
         // Download file
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        Downloader downloader = new Downloader();
-        downloader.setDownloadListener(downloadListener);
-        downloader.setTimeout(60 * 1000);
-        downloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.setTimeout(60 * 1000);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
 
         // Verification
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgressUpdate(TORRENT_FILE, 100);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETE);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(TORRENT_FILE, 100);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETED);
         File source = new File(CONTENT_DIRECTORY + File.separator + CONTENT_NAME);
         File result = new File(TEMPORARY_DIRECTORY + File.separator + CONTENT_NAME);
         assertThat(result.exists()).isTrue();
@@ -259,15 +262,15 @@ public final class DownloaderTest {
 
         // Download file
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        Downloader downloader = new Downloader();
-        downloader.setDownloadListener(downloadListener);
-        downloader.setTimeout(60 * 1000);
-        downloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.setTimeout(60 * 1000);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
 
         // Verification
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETE);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETED);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgressUpdate(TORRENT_FILE, 100);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(TORRENT_FILE, 100);
         File downloadFile = new File(TEMPORARY_DIRECTORY + File.separator + CONTENT_NAME);
         assertThat(downloadFile.exists()).isTrue();
         assertThat(FileUtils.contentEquals(sourceFile, downloadFile)).isTrue();

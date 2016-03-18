@@ -17,14 +17,17 @@
 package de.sulaco.ttorrent.android.service;
 
 public final class BitTorrentIntentConstants {
-    public static final String ACTION_DOWNLOAD =
+    public static final String ACTION_START_DOWNLOAD =
             "de.sulaco.android.ttorrent.service.DOWNLOAD";
 
     public static final String ACTION_ABORT_DOWNLOAD =
             "de.sulaco.android.ttorrent.service.ABORT_DOWNLOAD";
 
-    public static final String ACTION_BROADCAST =
-            "de.sulaco.android.ttorrent.service.BROADCAST";
+    /** Broadcast intent action sent by the download manager when a download completes. */
+    public static final String ACTION_BROADCAST_END = "de.sulaco.android.ttorrent.service.ACTION_BROADCAST_END";
+
+    public static final String ACTION_BROADCAST_PROGRESS =
+            "de.sulaco.android.ttorrent.service.ACTION_BROADCAST_PROGRESS";
 
     public static final String EXTRA_TORRENT_FILE =
             "de.sulaco.android.ttorrent.service.TORRENT_FILE";

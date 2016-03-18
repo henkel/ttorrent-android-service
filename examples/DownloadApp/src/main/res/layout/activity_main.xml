@@ -13,4 +13,12 @@
         android:id="@+id/btn_select_torrent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel_download"
+        android:id="@+id/btn_cancel_download"
+        android:layout_below="@+id/btn_select_torrent"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

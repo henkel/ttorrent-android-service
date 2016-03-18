@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.utils;
+package de.sulaco.ttorrent.ttorrent;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -25,28 +25,35 @@ import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Downloader {
+import de.sulaco.ttorrent.DownloadListener;
+import de.sulaco.ttorrent.DownloadState;
+import de.sulaco.ttorrent.Downloader;
+
+public class TtorrentDownloader implements Downloader{
 
     private DownloadListener downloadListener;
     private volatile int progress;
-    private final DownloadStateObserver downloadStateObserver = new DownloadStateObserver();
+    private final ClientObserver clientObserver = new ClientObserver();
     private long timeoutMillis = 0;
 
-    public Downloader() {
-    }
-
-    public synchronized void setDownloadListener(DownloadListener downloadListener) {
-        this.downloadListener = downloadListener;
+    public TtorrentDownloader() {
     }
 
     public synchronized void setTimeout(long millis) {
         timeoutMillis = millis;
     }
 
-    public void cancel() {
-        downloadStateObserver.cancel();
+    @Override
+    public synchronized void setDownloadListener(DownloadListener downloadListener) {
+        this.downloadListener = downloadListener;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        clientObserver.setEnabled(enabled);
+    }
+
+    @Override
     public synchronized void download(
             final String torrentFile,
             final String destinationDirectory) {
@@ -102,13 +109,13 @@ public class Downloader {
 
                 if ((int) completion >= progress + 1) {
                     progress = (int) completion;
-                    downloadListener.onDownloadProgressUpdate(torrentFile, progress);
+                    downloadListener.onDownloadProgress(torrentFile, progress);
                 }
             }
         });
 
         client.download();
-        int downloadState = downloadStateObserver.waitForCompletionOrTimeout(
+        int downloadState = clientObserver.waitForCompletionOrTimeout(
                 client,
                 timeoutMillis);
         client.stop();
