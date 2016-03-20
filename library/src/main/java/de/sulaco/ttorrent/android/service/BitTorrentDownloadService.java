@@ -20,8 +20,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import de.sulaco.ttorrent.Downloader;
 import de.sulaco.ttorrent.ttorrent.TtorrentDownloader;
 

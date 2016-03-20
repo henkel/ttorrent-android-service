@@ -50,16 +50,16 @@ class LocalBroadcaster implements DownloadListener {
     }
 
     static Intent createProgressIntent(String torrentFile, int progress) {
-        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, progress);
-        return intent;
+        return new DownloadProgressBroadcast()
+                .setTorrentFile(torrentFile)
+                .setProgress(progress)
+                .createIntent();
     }
 
     static Intent createEndIntent(String torrentFile, int downloadState) {
-        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST_END);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, downloadState);
-        return intent;
+        return new DownloadEndBroadcast()
+                .setTorrentFile(torrentFile)
+                .setDownloadState(downloadState)
+                .createIntent();
     }
 }

@@ -17,27 +17,27 @@
 package de.sulaco.ttorrent;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.turn.ttorrent.core.BuildConfig;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
-import java.util.List;
-
 import de.sulaco.ttorrent.android.service.BitTorrentDownloadService;
-import de.sulaco.ttorrent.android.service.BitTorrentIntentConstants;
+import de.sulaco.ttorrent.android.service.DownloadRequest;
+import de.sulaco.ttorrent.android.service.DownloadEndBroadcast;
+import de.sulaco.ttorrent.android.service.DownloadProgressBroadcast;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -45,9 +45,72 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 public class BitTorrentDownloadManagerTest {
 
     @Test
-    public void testToDo() {
+    public void testAbort() {
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        manager.abort();
+        Intent nextStartedIntent = ShadowApplication.getInstance().peekNextStartedService();
+        Intent referenceAbortIntent = BitTorrentDownloadService.createAbortIntent(RuntimeEnvironment.application);
+        assertThat(nextStartedIntent.filterEquals(referenceAbortIntent)).isTrue();
+    }
+
+    @Test
+    public void testEnqueue() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadRequest downloadRequest = new DownloadRequest();
+        downloadRequest.setTorrentFile(Uri.parse("file"));
+        downloadRequest.setDestinationDirectory(Uri.parse("dest"));
+        manager.enqueue(downloadRequest);
+        Intent nextStartedIntent = ShadowApplication.getInstance().peekNextStartedService();
+        Intent downloadIntent = downloadRequest.createIntent(RuntimeEnvironment.application);
+        assertThat(nextStartedIntent.equals(downloadIntent)).isTrue();
+    }
 
 
+    private void sendLocalProgressBroadcast(String torrentFile, int progress) {
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
+        ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
+        shadowLocalBroadcastManager.sendBroadcast(
+                new DownloadProgressBroadcast()
+                        .setTorrentFile(torrentFile)
+                        .setProgress(progress)
+                        .createIntent());
+    }
+
+    @Test
+    public void testNotifyDownloadStart() {
+        final String torrentFile = "file";
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        manager.setDownloadListener(downloadListener);
+        sendLocalProgressBroadcast(torrentFile, 0);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(torrentFile);
+    }
+
+    @Test
+    public void testNotifyDownloadProgress() {
+        final String torrentFile = "file";
+        final int progress = 42;
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        manager.setDownloadListener(downloadListener);
+        sendLocalProgressBroadcast(torrentFile, progress);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(torrentFile, progress);
+    }
+
+    @Test
+    public void testNotifyDownloadEnd() {
+        final String torrentFile = "file";
+        final int downloadState = 42;
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        manager.setDownloadListener(downloadListener);
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
+        ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
+        shadowLocalBroadcastManager.sendBroadcast(
+                new DownloadEndBroadcast()
+                        .setTorrentFile(torrentFile)
+                        .setDownloadState(downloadState)
+                        .createIntent());
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, downloadState);
     }
 }

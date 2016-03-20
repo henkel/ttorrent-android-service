@@ -21,8 +21,6 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.turn.ttorrent.core.BuildConfig;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -59,6 +57,8 @@ public class LocalBroadcasterTest {
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         List<Intent> broadcastIntents = shadowLocalBroadcastManager.getSentBroadcastIntents();
         assertThat(broadcastIntents.size()).isEqualTo(1);
+
+        // TODO not needed, compare to DownloadProgressBroadcast
         assertThat(broadcastIntents.get(0).getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
         assertThat(broadcastIntents.get(0).getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE)).isEqualToIgnoringCase(torrentFile);
         assertThat(broadcastIntents.get(0).getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, -1)).isEqualTo(0);
@@ -74,6 +74,8 @@ public class LocalBroadcasterTest {
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         List<Intent> broadcastIntents = shadowLocalBroadcastManager.getSentBroadcastIntents();
         assertThat(broadcastIntents.size()).isEqualTo(1);
+
+        // TODO not needed, compare to DownloadProgressBroadcast
         assertThat(broadcastIntents.get(0).getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
         assertThat(broadcastIntents.get(0).getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE)).isEqualToIgnoringCase(torrentFile);
         assertThat(broadcastIntents.get(0).getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, -1)).isEqualTo(progress);
@@ -89,6 +91,8 @@ public class LocalBroadcasterTest {
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         List<Intent> broadcastIntents = shadowLocalBroadcastManager.getSentBroadcastIntents();
         assertThat(broadcastIntents.size()).isEqualTo(1);
+
+        // TODO not needed, compare to DownloadEndBroadcast
         assertThat(broadcastIntents.get(0).getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_END);
         assertThat(broadcastIntents.get(0).getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE)).isEqualToIgnoringCase(torrentFile);
         assertThat(broadcastIntents.get(0).getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, -1)).isEqualTo(downloadState);

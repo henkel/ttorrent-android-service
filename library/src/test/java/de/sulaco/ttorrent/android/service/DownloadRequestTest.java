@@ -23,13 +23,9 @@ import com.turn.ttorrent.core.BuildConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import de.sulaco.ttorrent.DownloadListener;
-import de.sulaco.ttorrent.Downloader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
