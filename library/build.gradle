@@ -38,34 +38,38 @@ dependencies {
     testCompile 'org.slf4j:slf4j-nop:1.7.13'
 }
 
-Properties properties = new Properties()
-def localProperties = project.rootProject.file('local.properties')
-if (localProperties.exists()) {
-     properties.load(localProperties.newDataInputStream())
-}
 
 def siteUrl = 'https://github.com/henkel/ttorrent-android-service'
 def gitUrl = 'https://github.com/henkel/ttorrent-android-service.git'
 def issueUrl = 'https://github.com/henkel/ttorrent-android-service/issues'
 
-group = 'de.sulaco.ttorrent'
-version = '0.1.2'
+group = 'de.sulaco.bittorrent'
+version = '0.2.2'
+
+project.archivesBaseName = 'ttorrent-android-service'
+
+Properties properties = new Properties()
+def localProperties = project.rootProject.file('local.properties')
+if (localProperties.exists()) {
+    properties.load(localProperties.newDataInputStream())
+}
 
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
-
     configurations = ['archives'] //When uploading configuration files
     pkg {
         repo = 'maven'
-        name = project.name
-        desc = 'Android BitTorrent Service'
+        name = 'ttorrent-android-service'
+        desc = 'Android BitTorrent IntentService based on the ttorrent library.'
         websiteUrl = siteUrl
         issueTrackerUrl = issueUrl
         vcsUrl = gitUrl
         licenses = ['Apache-2.0']
-        labels = ['aar', 'android', 'bittorrent', 'ttorrent']
+        labels = ['bittorrent', 'ttorrent', 'android', 'aar']
         publicDownloadNumbers = true
+        githubRepo = 'henkel/ttorrent-android-service'
+        githubReleaseNotesFile = 'README.md'
     }
 }
 

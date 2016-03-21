@@ -16,7 +16,7 @@ declare the dependency.
 
 ```groovy
 dependencies {
-    compile 'de.sulaco.ttorrent:ttorrent-android-service:0.2.0'
+    compile 'de.sulaco.bittorrent:ttorrent-android-service:0.2.3'
 }
 ```
 

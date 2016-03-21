@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.ttorrent;
+package de.sulaco.ttorrent.android.service;
 
 import com.turn.ttorrent.client.Client;
 
@@ -23,7 +23,7 @@ import java.util.Observer;
 
 import de.sulaco.ttorrent.DownloadState;
 
-public class ClientObserver {
+class TtorrentClientObserver {
     private long nameTimeOfLastActivity;
     private boolean isEnabled = true;
 
@@ -67,9 +67,9 @@ public class ClientObserver {
                     return;
                 }
 
-                synchronized (ClientObserver.this) {
+                synchronized (TtorrentClientObserver.this) {
                     nameTimeOfLastActivity = System.nanoTime();
-                    ClientObserver.this.notifyAll();
+                    TtorrentClientObserver.this.notifyAll();
                 }
             }
         });

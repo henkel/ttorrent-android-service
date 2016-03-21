@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.ttorrent;
+package de.sulaco.ttorrent.android.service;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -27,13 +27,12 @@ import java.util.Observer;
 
 import de.sulaco.ttorrent.DownloadListener;
 import de.sulaco.ttorrent.DownloadState;
-import de.sulaco.ttorrent.Downloader;
 
-public class TtorrentDownloader implements Downloader{
+class TtorrentDownloader implements Downloader{
 
     private DownloadListener downloadListener;
     private volatile int progress;
-    private final ClientObserver clientObserver = new ClientObserver();
+    private final TtorrentClientObserver ttorrentClientObserver = new TtorrentClientObserver();
     private long timeoutMillis = 0;
 
     public TtorrentDownloader() {
@@ -50,7 +49,7 @@ public class TtorrentDownloader implements Downloader{
 
     @Override
     public void setEnabled(boolean enabled) {
-        clientObserver.setEnabled(enabled);
+        ttorrentClientObserver.setEnabled(enabled);
     }
 
     @Override
@@ -115,7 +114,7 @@ public class TtorrentDownloader implements Downloader{
         });
 
         client.download();
-        int downloadState = clientObserver.waitForCompletionOrTimeout(
+        int downloadState = ttorrentClientObserver.waitForCompletionOrTimeout(
                 client,
                 timeoutMillis);
         client.stop();

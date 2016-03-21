@@ -29,7 +29,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import de.sulaco.ttorrent.DownloadListener;
-import de.sulaco.ttorrent.Downloader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

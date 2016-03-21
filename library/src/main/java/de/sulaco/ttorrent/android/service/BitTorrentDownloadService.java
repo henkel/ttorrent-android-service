@@ -20,9 +20,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
-import de.sulaco.ttorrent.Downloader;
-import de.sulaco.ttorrent.ttorrent.TtorrentDownloader;
-
 /**
  * <p/>
  * Downloads a BitTorrent file.

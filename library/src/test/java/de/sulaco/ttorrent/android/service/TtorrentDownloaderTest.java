@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.ttorrent;
+package de.sulaco.ttorrent.android.service;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -43,6 +43,7 @@ import java.util.Collection;
 
 import de.sulaco.ttorrent.DownloadListener;
 import de.sulaco.ttorrent.DownloadState;
+import de.sulaco.ttorrent.android.service.TtorrentDownloader;
 
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Assertions.assertThat;
