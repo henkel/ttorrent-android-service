@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.android.service;
+package de.sulaco.bittorrent.service;
 
 public final class BitTorrentIntentConstants {
     public static final String ACTION_START_DOWNLOAD =

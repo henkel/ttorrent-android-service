@@ -22,9 +22,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-import de.sulaco.bittorrent.android.service.BitTorrentDownloadService;
-import de.sulaco.bittorrent.android.service.BitTorrentIntentConstants;
-import de.sulaco.bittorrent.android.service.DownloadRequest;
+import de.sulaco.bittorrent.service.BitTorrentDownloadService;
+import de.sulaco.bittorrent.service.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.service.DownloadRequest;
 
 public class BitTorrentDownloadManager {
 

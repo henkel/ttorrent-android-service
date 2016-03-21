@@ -32,10 +32,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
-import de.sulaco.bittorrent.android.service.BitTorrentDownloadService;
-import de.sulaco.bittorrent.android.service.DownloadRequest;
-import de.sulaco.bittorrent.android.service.DownloadEndBroadcast;
-import de.sulaco.bittorrent.android.service.DownloadProgressBroadcast;
+import de.sulaco.bittorrent.service.BitTorrentDownloadService;
+import de.sulaco.bittorrent.service.DownloadRequest;
+import de.sulaco.bittorrent.service.DownloadEndBroadcast;
+import de.sulaco.bittorrent.service.DownloadProgressBroadcast;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

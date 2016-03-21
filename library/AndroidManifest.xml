@@ -2,7 +2,7 @@
     package="com.turn.ttorrent.core">
         <application>
             <service
-            android:name="de.sulaco.bittorrent.android.service.BitTorrentDownloadService"
+            android:name="de.sulaco.bittorrent.service.BitTorrentDownloadService"
             android:exported="false"/>
         </application>
 </manifest>

@@ -14,7 +14,7 @@ import java.io.File;
 
 import de.sulaco.bittorrent.BitTorrentDownloadManager;
 import de.sulaco.bittorrent.DownloadListener;
-import de.sulaco.bittorrent.android.service.DownloadRequest;
+import de.sulaco.bittorrent.service.DownloadRequest;
 import de.sulaco.bittorrent.DownloadState;
 
 public class MainActivity extends Activity implements DownloadListener {
