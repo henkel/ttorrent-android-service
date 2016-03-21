@@ -74,11 +74,12 @@ public class LocalBroadcasterTest {
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         List<Intent> broadcastIntents = shadowLocalBroadcastManager.getSentBroadcastIntents();
         assertThat(broadcastIntents.size()).isEqualTo(1);
-
-        // TODO not needed, compare to DownloadProgressBroadcast
-        assertThat(broadcastIntents.get(0).getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
-        assertThat(broadcastIntents.get(0).getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE)).isEqualToIgnoringCase(torrentFile);
-        assertThat(broadcastIntents.get(0).getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, -1)).isEqualTo(progress);
+        Intent referenceBroadcast =
+                new DownloadProgressBroadcast()
+                        .setTorrentFile(torrentFile)
+                        .setProgress(progress)
+                        .createIntent();
+        assertThat(broadcastIntents.get(0).equals(referenceBroadcast)).isTrue();
     }
 
     @Test
@@ -91,10 +92,11 @@ public class LocalBroadcasterTest {
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         List<Intent> broadcastIntents = shadowLocalBroadcastManager.getSentBroadcastIntents();
         assertThat(broadcastIntents.size()).isEqualTo(1);
-
-        // TODO not needed, compare to DownloadEndBroadcast
-        assertThat(broadcastIntents.get(0).getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_END);
-        assertThat(broadcastIntents.get(0).getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE)).isEqualToIgnoringCase(torrentFile);
-        assertThat(broadcastIntents.get(0).getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, -1)).isEqualTo(downloadState);
+        Intent referenceBroadcast =
+                new DownloadEndBroadcast()
+                        .setTorrentFile(torrentFile)
+                        .setDownloadState(downloadState)
+                        .createIntent();
+        assertThat(broadcastIntents.get(0).equals(referenceBroadcast)).isTrue();
     }
 }

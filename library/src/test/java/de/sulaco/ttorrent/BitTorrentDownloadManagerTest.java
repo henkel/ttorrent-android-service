@@ -97,13 +97,7 @@ public class BitTorrentDownloadManagerTest {
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(torrentFile, progress);
     }
 
-    @Test
-    public void testNotifyDownloadEnd() {
-        final String torrentFile = "file";
-        final int downloadState = 42;
-        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
-        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        manager.setDownloadListener(downloadListener);
+    private void sendLocalEndBroadcast(String torrentFile, int downloadState) {
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
         shadowLocalBroadcastManager.sendBroadcast(
@@ -111,6 +105,29 @@ public class BitTorrentDownloadManagerTest {
                         .setTorrentFile(torrentFile)
                         .setDownloadState(downloadState)
                         .createIntent());
+    }
+
+
+    @Test
+    public void testNotifyDownloadEnd() {
+        final String torrentFile = "file";
+        final int downloadState = 42;
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        manager.setDownloadListener(downloadListener);
+        sendLocalEndBroadcast(torrentFile, downloadState);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, downloadState);
+    }
+
+    @Test
+    public void testProgressBroadcastWithoutListener() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        sendLocalProgressBroadcast("file", 42);
+    }
+
+    @Test
+    public void testEndBroadcastWithoutListener() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        sendLocalEndBroadcast("file", 42);
     }
 }
