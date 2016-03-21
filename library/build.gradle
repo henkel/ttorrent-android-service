@@ -44,7 +44,7 @@ def gitUrl = 'https://github.com/henkel/ttorrent-android-service.git'
 def issueUrl = 'https://github.com/henkel/ttorrent-android-service/issues'
 
 group = 'de.sulaco.bittorrent'
-version = '0.2.2'
+version = '0.2.3'
 
 project.archivesBaseName = 'ttorrent-android-service'
 
