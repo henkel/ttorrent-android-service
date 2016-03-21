@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
 import android.content.Intent;
 
@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class DownloadProgressBroadcastTest {
+public class DownloadEndBroadcastTest {
 
     @Test
     public void testBroadcastWithOutData() {
-        DownloadProgressBroadcast broadcast = new DownloadProgressBroadcast();
+        DownloadEndBroadcast downloadEndBroadcast = new DownloadEndBroadcast();
         try {
-            broadcast.createIntent();
+            downloadEndBroadcast.createIntent();
             failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expectedException) {
         }
@@ -45,42 +45,28 @@ public class DownloadProgressBroadcastTest {
 
     @Test
     public void testSetTorrentFile() {
-        DownloadProgressBroadcast broadcast = new DownloadProgressBroadcast();
-        assertThat(broadcast.setTorrentFile("file")).isSameAs(broadcast);
+        DownloadEndBroadcast downloadEndBroadcast = new DownloadEndBroadcast();
+        assertThat(downloadEndBroadcast.setTorrentFile("file")).isSameAs(downloadEndBroadcast);
     }
 
     @Test
-    public void testSetProgress() {
-        DownloadProgressBroadcast broadcast = new DownloadProgressBroadcast();
-        assertThat(broadcast.setProgress(42)).isSameAs(broadcast);
+    public void testSetDownloadState() {
+        DownloadEndBroadcast downloadEndBroadcast = new DownloadEndBroadcast();
+        assertThat(downloadEndBroadcast.setDownloadState(42)).isSameAs(downloadEndBroadcast);
     }
 
     @Test
     public void testCreateIntent() {
         final String torrentFile = "file";
-        final int progress = 42;
-        DownloadProgressBroadcast broadcast = new DownloadProgressBroadcast();
-        broadcast.setTorrentFile(torrentFile);
-        broadcast.setProgress(progress);
-        Intent intent = broadcast.createIntent();
-        assertThat(intent.getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
+        final int downloadState = 42;
+        DownloadEndBroadcast downloadEndBroadcast = new DownloadEndBroadcast();
+        downloadEndBroadcast.setTorrentFile(torrentFile);
+        downloadEndBroadcast.setDownloadState(downloadState);
+        Intent intent = downloadEndBroadcast.createIntent();
+        assertThat(intent.getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_BROADCAST_END);
         assertThat(intent.getStringExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE))
                 .isEqualToIgnoringCase(torrentFile);
-        assertThat(intent.getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, -1))
-                .isEqualTo(progress);
-    }
-
-    @Test
-    public void testCreateIntentWithProgressOutOfRange() {
-        final String torrentFile = "file";
-        final int progress = 200;
-        DownloadProgressBroadcast broadcast = new DownloadProgressBroadcast();
-        broadcast.setTorrentFile(torrentFile);
-        broadcast.setProgress(progress);
-        try {
-            broadcast.createIntent();
-            failBecauseExceptionWasNotThrown(IllegalStateException.class);
-        } catch (IllegalStateException expectedException) {
-        }
+        assertThat(intent.getIntExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, -1))
+                .isEqualTo(downloadState);
     }
 }

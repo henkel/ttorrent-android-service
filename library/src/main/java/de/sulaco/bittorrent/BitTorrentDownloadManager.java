@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent;
+package de.sulaco.bittorrent;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,9 +22,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-import de.sulaco.ttorrent.android.service.BitTorrentDownloadService;
-import de.sulaco.ttorrent.android.service.BitTorrentIntentConstants;
-import de.sulaco.ttorrent.android.service.DownloadRequest;
+import de.sulaco.bittorrent.android.service.BitTorrentDownloadService;
+import de.sulaco.bittorrent.android.service.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.android.service.DownloadRequest;
 
 public class BitTorrentDownloadManager {
 

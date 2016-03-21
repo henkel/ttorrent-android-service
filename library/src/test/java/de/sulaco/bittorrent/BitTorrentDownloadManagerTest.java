@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent;
+package de.sulaco.bittorrent;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -32,10 +32,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
-import de.sulaco.ttorrent.android.service.BitTorrentDownloadService;
-import de.sulaco.ttorrent.android.service.DownloadRequest;
-import de.sulaco.ttorrent.android.service.DownloadEndBroadcast;
-import de.sulaco.ttorrent.android.service.DownloadProgressBroadcast;
+import de.sulaco.bittorrent.android.service.BitTorrentDownloadService;
+import de.sulaco.bittorrent.android.service.DownloadRequest;
+import de.sulaco.bittorrent.android.service.DownloadEndBroadcast;
+import de.sulaco.bittorrent.android.service.DownloadProgressBroadcast;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

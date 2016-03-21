@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
 import android.app.IntentService;
 import android.content.Context;

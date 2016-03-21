@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
-import de.sulaco.ttorrent.DownloadListener;
+import de.sulaco.bittorrent.DownloadListener;
 
 interface Downloader {
     void download(String torrentFile, String destinationDirectory);

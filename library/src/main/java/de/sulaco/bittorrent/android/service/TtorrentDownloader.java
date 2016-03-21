@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -25,8 +25,8 @@ import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.sulaco.ttorrent.DownloadListener;
-import de.sulaco.ttorrent.DownloadState;
+import de.sulaco.bittorrent.DownloadListener;
+import de.sulaco.bittorrent.DownloadState;
 
 class TtorrentDownloader implements Downloader{
 

@@ -12,10 +12,10 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import de.sulaco.ttorrent.BitTorrentDownloadManager;
-import de.sulaco.ttorrent.DownloadListener;
-import de.sulaco.ttorrent.android.service.DownloadRequest;
-import de.sulaco.ttorrent.DownloadState;
+import de.sulaco.bittorrent.BitTorrentDownloadManager;
+import de.sulaco.bittorrent.DownloadListener;
+import de.sulaco.bittorrent.android.service.DownloadRequest;
+import de.sulaco.bittorrent.DownloadState;
 
 public class MainActivity extends Activity implements DownloadListener {
     public static String TAG = "MainActivity";

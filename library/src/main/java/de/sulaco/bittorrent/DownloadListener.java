@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent;
+package de.sulaco.bittorrent;
 
 public interface DownloadListener {
     void onDownloadStart(String torrentFile);

@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
 import android.content.Intent;
 
-public class DownloadProgressBroadcast {
+public class DownloadEndBroadcast {
 
     private String torrentFile;
-    private int progress;
+    private int downloadState;
 
-    public DownloadProgressBroadcast() {
+    public DownloadEndBroadcast() {
     }
 
-    public DownloadProgressBroadcast setTorrentFile(String torrentFile) {
+    public DownloadEndBroadcast setTorrentFile(String torrentFile) {
         this.torrentFile = torrentFile;
         return this;
     }
 
-    public DownloadProgressBroadcast setProgress(int progress) {
-        this.progress = progress;
+    public DownloadEndBroadcast setDownloadState(int downloadState) {
+        this.downloadState = downloadState;
         return this;
     }
 
@@ -40,12 +40,9 @@ public class DownloadProgressBroadcast {
         if (torrentFile == null) {
             throw new IllegalStateException("torrentFile must not be null");
         }
-        if (progress < 0 || progress > 100) {
-            throw new IllegalStateException("progress out of range");
-        }
-        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
+        Intent intent = new Intent(BitTorrentIntentConstants.ACTION_BROADCAST_END);
         intent.putExtra(BitTorrentIntentConstants.EXTRA_TORRENT_FILE, torrentFile);
-        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_PROGRESS, progress);
+        intent.putExtra(BitTorrentIntentConstants.EXTRA_DOWNLOAD_STATE, downloadState);
         return intent;
     }
 

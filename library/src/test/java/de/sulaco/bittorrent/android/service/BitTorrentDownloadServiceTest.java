@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.ttorrent.android.service;
+package de.sulaco.bittorrent.android.service;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -28,7 +28,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import de.sulaco.ttorrent.DownloadListener;
+import de.sulaco.bittorrent.DownloadListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
