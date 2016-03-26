@@ -6,13 +6,15 @@ ttorrent-android-service
 Description
 -----------
 
-BitTorrent IntentService for Android with focus on file download. The service is based on ttorrent.
+ttorrent-android-service is an Android BitTorrent library with strong focus on ease of use and simple integration into your projects. All requests are handled on a single worker thread in an IntentService and thus your application can perform long-running download operations in the background by design.
+
+The implementation of the BitTorrent protocol itself is provided by [ttorrent](https://github.com/mpetazzoni/ttorrent).
 
 How to use
 ----------
 
-To use ``ttorrent-android-service`` in your Android project, all you need is to
-declare the dependency.
+To get started with ttorrent-android-service in your Android project, all you need is to
+declare the Gradle dependency.
 
 ```groovy
 dependencies {
@@ -21,23 +23,24 @@ dependencies {
 ```
 
 
+#### Example Code
 
-#### Example code
-
-TODO
+You can either use ``BitTorrentDownloadService`` directly or use ``BitTorrentDownloadManager`` that encapsulates the communication with the IntentService. More details are available in our [example projects](https://github.com/henkel/ttorrent-android-service/tree/master/examples).
 
 ```java
-
-    BitTorrentDownloadService.requestDownload(
-       this, 
-       "/storage/emulated/0/test/baden-wuerttemberg.torrent", 
-       "/storage/emulated/0/test/");
-
+    BitTorrentDownloadManager bitTorrentDownloadManager = new BitTorrentDownloadManager(context);
+    
+    DownloadRequest request = new DownloadRequest()
+        .setTorrentFile(Uri.parse( "/storage/emulated/0/test/baden-wuerttemberg.torrent"))
+        .setDestinationDirectory(Uri.parse( "/storage/emulated/0/test/"));
+    
+    bitTorrentDownloadManager.enqueue(request);
 ```
 
 License
 -------
 
-This library is distributed under the terms of the Apache Software 
-License version 2.0. See LICENSE file for more details.
+Copyright 2016 Philipp Henkel
+
+Licensed under the Apache License, Version 2.0. See LICENSE file for more details.
 
