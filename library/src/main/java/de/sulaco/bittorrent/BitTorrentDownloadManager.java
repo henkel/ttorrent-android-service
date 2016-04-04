@@ -28,40 +28,55 @@ import de.sulaco.bittorrent.service.DownloadRequest;
 
 public class BitTorrentDownloadManager {
 
-    private volatile DownloadListener downloadListener;
     private Context context;
+    private volatile DownloadListener downloadListener;
+    private final IntentFilter progressFilter = new IntentFilter(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
+    private final IntentFilter endFilter = new IntentFilter(BitTorrentIntentConstants.ACTION_BROADCAST_END);
+
+    private final BroadcastReceiver progressBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            handleProgressBroadcast(intent, downloadListener);
+        }
+    };
+
+    private final BroadcastReceiver endBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            handleEndBroadcast(intent, downloadListener);
+        }
+    };
 
     public BitTorrentDownloadManager(Context context) {
+        if (context == null) {
+            throw new NullPointerException("context must not be null");
+        }
         this.context = context;
+    }
 
-        IntentFilter progressFilter = new IntentFilter(BitTorrentIntentConstants.ACTION_BROADCAST_PROGRESS);
-
-        // TODO unregister
+    public void registerDownloadListener(DownloadListener listener) {
+        if (listener == null) {
+            throw new NullPointerException("listener must not be null");
+        }
+        if (downloadListener != null) {
+            throw new IllegalStateException("download listener is already registered");
+        }
+        downloadListener = listener;
         LocalBroadcastManager.getInstance(context).registerReceiver(
-                new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        handleProgressBroadcast(intent, downloadListener);
-                    }
-                },
+                progressBroadcastReceiver,
                 progressFilter);
-
-
-        IntentFilter endFilter = new IntentFilter(BitTorrentIntentConstants.ACTION_BROADCAST_END);
-
-        // TODO unregister
         LocalBroadcastManager.getInstance(context).registerReceiver(
-                new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        handleEndBroadcast(intent, downloadListener);
-                    }
-                },
+                endBroadcastReceiver,
                 endFilter);
     }
 
-    public void setDownloadListener(DownloadListener listener) {
-        downloadListener = listener;
+    public void unregisterDownloadListener(DownloadListener listener) {
+        if (downloadListener != listener) {
+            throw new IllegalStateException("download listener is not registered");
+        }
+        downloadListener = null;
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(progressBroadcastReceiver);
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(endBroadcastReceiver);
     }
 
     public void enqueue(DownloadRequest downloadRequest) {

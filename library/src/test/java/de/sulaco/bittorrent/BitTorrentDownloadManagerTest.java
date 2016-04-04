@@ -38,11 +38,54 @@ import de.sulaco.bittorrent.service.DownloadEndBroadcast;
 import de.sulaco.bittorrent.service.DownloadProgressBroadcast;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class BitTorrentDownloadManagerTest {
+
+    @Test
+    public void testConstructionWithNullContext() {
+        try {
+            new BitTorrentDownloadManager(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expectedException) {
+        }
+    }
+
+    @Test
+    public void testRegisterDownloadListenerWithNull() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        try {
+            manager.registerDownloadListener(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expectedException) {
+        }
+    }
+
+    @Test
+    public void testUnregisterDownloadListenerThatIsNotRegistered() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        try {
+            manager.unregisterDownloadListener(downloadListener);
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expectedException) {
+        }
+    }
+
+    @Test
+    public void testRegisterDownloadListenerTwice() {
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        manager.registerDownloadListener(downloadListener);
+        try {
+            manager.registerDownloadListener(downloadListener);
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expectedException) {
+        }
+    }
 
     @Test
     public void testAbort() {
@@ -65,7 +108,6 @@ public class BitTorrentDownloadManagerTest {
         assertThat(nextStartedIntent.equals(downloadIntent)).isTrue();
     }
 
-
     private void sendLocalProgressBroadcast(String torrentFile, int progress) {
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(RuntimeEnvironment.application);
         ShadowLocalBroadcastManager shadowLocalBroadcastManager = Shadows.shadowOf(localBroadcastManager);
@@ -81,8 +123,9 @@ public class BitTorrentDownloadManagerTest {
         final String torrentFile = "file";
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        manager.setDownloadListener(downloadListener);
+        manager.registerDownloadListener(downloadListener);
         sendLocalProgressBroadcast(torrentFile, 0);
+        manager.unregisterDownloadListener(downloadListener);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(torrentFile);
     }
 
@@ -92,8 +135,9 @@ public class BitTorrentDownloadManagerTest {
         final int progress = 42;
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        manager.setDownloadListener(downloadListener);
+        manager.registerDownloadListener(downloadListener);
         sendLocalProgressBroadcast(torrentFile, progress);
+        manager.unregisterDownloadListener(downloadListener);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(torrentFile, progress);
     }
 
@@ -107,15 +151,15 @@ public class BitTorrentDownloadManagerTest {
                         .createIntent());
     }
 
-
     @Test
     public void testNotifyDownloadEnd() {
         final String torrentFile = "file";
         final int downloadState = 42;
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
-        manager.setDownloadListener(downloadListener);
+        manager.registerDownloadListener(downloadListener);
         sendLocalEndBroadcast(torrentFile, downloadState);
+        manager.unregisterDownloadListener(downloadListener);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, downloadState);
     }
 
@@ -129,5 +173,13 @@ public class BitTorrentDownloadManagerTest {
     public void testEndBroadcastWithoutListener() {
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
         sendLocalEndBroadcast("file", 42);
+    }
+
+    @Test
+    public void testDownloadWithoutDownloadListener() {
+        final String torrentFile = "file";
+        BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
+        sendLocalProgressBroadcast(torrentFile, 5);
+        sendLocalEndBroadcast(torrentFile, 7);
     }
 }
