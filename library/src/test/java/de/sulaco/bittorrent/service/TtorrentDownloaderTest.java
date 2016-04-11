@@ -85,16 +85,6 @@ public final class TtorrentDownloaderTest {
     }
 
     @Test
-    public void testNoDownloadSupervisor() {
-        try {
-            TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
-            ttorrentDownloader.download(TORRENT_FILE, "dir");
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expectedException) {
-        }
-    }
-
-    @Test
     public void testDownloadNullTorrentFile() {
         TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
@@ -238,6 +228,28 @@ public final class TtorrentDownloaderTest {
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadProgress(TORRENT_FILE, 100);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.COMPLETED);
+        File source = new File(CONTENT_DIRECTORY + File.separator + CONTENT_NAME);
+        File result = new File(TEMPORARY_DIRECTORY + File.separator + CONTENT_NAME);
+        assertThat(result.exists()).isTrue();
+        assertThat(FileUtils.contentEquals(source, result)).isTrue();
+
+        // Tear down seeder and tracker
+        client.stop();
+        tracker.stop();
+    }
+
+    @Test
+    public void testDownloadWithoutDownloadListener()  throws IOException, NoSuchAlgorithmException {
+        // Start seeder and tracker
+        Tracker tracker = startTracker();
+        Client client = startSeeder();
+
+        // Download file
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
+        ttorrentDownloader.setTimeout(60 * 1000);
+        ttorrentDownloader.download(TORRENT_FILE, TEMPORARY_DIRECTORY);
+
+        // Verification
         File source = new File(CONTENT_DIRECTORY + File.separator + CONTENT_NAME);
         File result = new File(TEMPORARY_DIRECTORY + File.separator + CONTENT_NAME);
         assertThat(result.exists()).isTrue();

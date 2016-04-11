@@ -78,7 +78,7 @@ public class BitTorrentDownloadServiceTest {
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
         bitTorrentDownloadService.setDownloader(downloader);
         bitTorrentDownloadService.onCreate();
-        Intent abortIntent = BitTorrentDownloadService.createAbortIntent(RuntimeEnvironment.application);
+        Intent abortIntent = AbortRequest.createIntent(RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onStartCommand(abortIntent, 0, 0);
         assertThat(bitTorrentDownloadService.isAbortPending()).isTrue();
@@ -108,7 +108,7 @@ public class BitTorrentDownloadServiceTest {
                 .setTorrentFile(Uri.parse(torrentFileTwo))
                 .setDestinationDirectory(Uri.parse(destinationDirectoryTwo))
                 .createIntent(RuntimeEnvironment.application);
-        Intent abortIntent = BitTorrentDownloadService.createAbortIntent(
+        Intent abortIntent = AbortRequest.createIntent(
                 RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onStartCommand(downloadIntentOne, 0, 0);
@@ -148,7 +148,7 @@ public class BitTorrentDownloadServiceTest {
                 .setTorrentFile(Uri.parse(torrentFileTwo))
                 .setDestinationDirectory(Uri.parse(destinationDirectoryTwo))
                 .createIntent(RuntimeEnvironment.application);
-        Intent abortIntent = BitTorrentDownloadService.createAbortIntent(
+        Intent abortIntent = AbortRequest.createIntent(
                 RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onStartCommand(downloadIntentOne, 0, 0);
@@ -189,7 +189,7 @@ public class BitTorrentDownloadServiceTest {
                 .setTorrentFile(Uri.parse(torrentFileTwo))
                 .setDestinationDirectory(Uri.parse(destinationDirectoryTwo))
                 .createIntent(RuntimeEnvironment.application);
-        Intent abortIntent = BitTorrentDownloadService.createAbortIntent(
+        Intent abortIntent = AbortRequest.createIntent(
                 RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onStartCommand(downloadIntentOne, 0, 0);
@@ -224,7 +224,7 @@ public class BitTorrentDownloadServiceTest {
                 .setTorrentFile(Uri.parse(torrentFile))
                 .setDestinationDirectory(Uri.parse(destinationDirectory))
                 .createIntent(RuntimeEnvironment.application);
-        Intent abortIntent = BitTorrentDownloadService.createAbortIntent(
+        Intent abortIntent = AbortRequest.createIntent(
                 RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onStartCommand(abortIntent, 0, 0);
@@ -262,7 +262,7 @@ public class BitTorrentDownloadServiceTest {
 
     @Test
     public void testCreateAbortIntent() {
-        Intent intent = BitTorrentDownloadService.createAbortIntent(RuntimeEnvironment.application);
+        Intent intent = AbortRequest.createIntent(RuntimeEnvironment.application);
         assertThat(intent.getAction()).isEqualTo(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD);
     }
 }

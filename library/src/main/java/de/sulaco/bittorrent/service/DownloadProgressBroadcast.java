@@ -26,6 +26,13 @@ public class DownloadProgressBroadcast {
     public DownloadProgressBroadcast() {
     }
 
+    public static Intent createProgressIntent(String torrentFile, int progress) {
+        return new DownloadProgressBroadcast()
+                .setTorrentFile(torrentFile)
+                .setProgress(progress)
+                .createIntent();
+    }
+
     public DownloadProgressBroadcast setTorrentFile(String torrentFile) {
         this.torrentFile = torrentFile;
         return this;

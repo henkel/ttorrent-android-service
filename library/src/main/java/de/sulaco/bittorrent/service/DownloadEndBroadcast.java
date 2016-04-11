@@ -26,6 +26,13 @@ public class DownloadEndBroadcast {
     public DownloadEndBroadcast() {
     }
 
+    public static Intent createIntent(String torrentFile, int downloadState) {
+        return new DownloadEndBroadcast()
+                .setTorrentFile(torrentFile)
+                .setDownloadState(downloadState)
+                .createIntent();
+    }
+
     public DownloadEndBroadcast setTorrentFile(String torrentFile) {
         this.torrentFile = torrentFile;
         return this;

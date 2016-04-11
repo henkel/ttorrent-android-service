@@ -40,7 +40,6 @@ You can either use ``BitTorrentDownloadService`` directly or use ``BitTorrentDow
 License
 -------
 
-Copyright 2016 Philipp Henkel
+Copyright (C) 2016 Philipp Henkel
 
 Licensed under the Apache License, Version 2.0. See LICENSE file for more details.
-

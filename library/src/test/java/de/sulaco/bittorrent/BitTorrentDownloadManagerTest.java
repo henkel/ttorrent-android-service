@@ -32,10 +32,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
-import de.sulaco.bittorrent.service.BitTorrentDownloadService;
 import de.sulaco.bittorrent.service.DownloadRequest;
 import de.sulaco.bittorrent.service.DownloadEndBroadcast;
 import de.sulaco.bittorrent.service.DownloadProgressBroadcast;
+import de.sulaco.bittorrent.service.AbortRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -92,7 +92,7 @@ public class BitTorrentDownloadManagerTest {
         BitTorrentDownloadManager manager = new BitTorrentDownloadManager(RuntimeEnvironment.application);
         manager.abort();
         Intent nextStartedIntent = ShadowApplication.getInstance().peekNextStartedService();
-        Intent referenceAbortIntent = BitTorrentDownloadService.createAbortIntent(RuntimeEnvironment.application);
+        Intent referenceAbortIntent = AbortRequest.createIntent(RuntimeEnvironment.application);
         assertThat(nextStartedIntent.filterEquals(referenceAbortIntent)).isTrue();
     }
 

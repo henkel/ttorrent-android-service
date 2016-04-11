@@ -34,32 +34,19 @@ class LocalBroadcaster implements DownloadListener {
     }
 
     public void onDownloadStart(String torrentFile) {
-        broadcast(createProgressIntent(torrentFile, 0));
+        broadcast(DownloadProgressBroadcast.createProgressIntent(torrentFile, 0));
     }
 
     public void onDownloadProgress(String torrentFile, int progress) {
-        broadcast(createProgressIntent(torrentFile, progress));
+        broadcast(DownloadProgressBroadcast.createProgressIntent(torrentFile, progress));
     }
 
     public void onDownloadEnd(String torrentFile, int downloadState) {
-        broadcast(createEndIntent(torrentFile, downloadState));
+        broadcast(DownloadEndBroadcast.createIntent(torrentFile, downloadState));
     }
 
     void broadcast(Intent intent) {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    static Intent createProgressIntent(String torrentFile, int progress) {
-        return new DownloadProgressBroadcast()
-                .setTorrentFile(torrentFile)
-                .setProgress(progress)
-                .createIntent();
-    }
-
-    static Intent createEndIntent(String torrentFile, int downloadState) {
-        return new DownloadEndBroadcast()
-                .setTorrentFile(torrentFile)
-                .setDownloadState(downloadState)
-                .createIntent();
-    }
 }

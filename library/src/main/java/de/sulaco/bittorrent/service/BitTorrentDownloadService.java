@@ -40,12 +40,6 @@ public class BitTorrentDownloadService extends IntentService {
         setDownloader(new TtorrentDownloader());
     }
 
-    public static Intent createAbortIntent(Context context) {
-        Intent intent = new Intent(context, BitTorrentDownloadService.class);
-        intent.setAction(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD);
-        return intent;
-    }
-
     synchronized boolean isAbortPending() {
         return pendingAbortCount > 0;
     }
@@ -84,6 +78,7 @@ public class BitTorrentDownloadService extends IntentService {
                     BitTorrentIntentConstants.EXTRA_TORRENT_FILE);
             final String destinationDirectory = intent.getStringExtra(
                     BitTorrentIntentConstants.EXTRA_DESTINATION_DIRECTORY);
+
             downloader.download(torrentFile, destinationDirectory);
         }
     }

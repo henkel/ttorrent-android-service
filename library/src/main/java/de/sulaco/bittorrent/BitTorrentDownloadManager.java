@@ -22,9 +22,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-import de.sulaco.bittorrent.service.BitTorrentDownloadService;
 import de.sulaco.bittorrent.service.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.DownloadRequest;
+import de.sulaco.bittorrent.service.AbortRequest;
 
 public class BitTorrentDownloadManager {
 
@@ -62,6 +62,10 @@ public class BitTorrentDownloadManager {
             throw new IllegalStateException("download listener is already registered");
         }
         downloadListener = listener;
+        registerBroadcastReceivers();
+    }
+
+    private void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(context).registerReceiver(
                 progressBroadcastReceiver,
                 progressFilter);
@@ -75,6 +79,10 @@ public class BitTorrentDownloadManager {
             throw new IllegalStateException("download listener is not registered");
         }
         downloadListener = null;
+        unregisterBroadcastReceivers();
+    }
+
+    private void unregisterBroadcastReceivers() {
         LocalBroadcastManager.getInstance(context).unregisterReceiver(progressBroadcastReceiver);
         LocalBroadcastManager.getInstance(context).unregisterReceiver(endBroadcastReceiver);
     }
@@ -84,7 +92,7 @@ public class BitTorrentDownloadManager {
     }
 
     public void abort() {
-        context.startService(BitTorrentDownloadService.createAbortIntent(context));
+        context.startService(AbortRequest.createIntent(context));
     }
 
     static void handleProgressBroadcast(Intent intent, DownloadListener listener) {
