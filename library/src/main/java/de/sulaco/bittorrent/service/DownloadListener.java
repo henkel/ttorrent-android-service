@@ -16,10 +16,8 @@
 
 package de.sulaco.bittorrent.service;
 
-import de.sulaco.bittorrent.DownloadListener;
-
-public interface Downloader {
-    void download(String torrentFile, String destinationDirectory);
-    void setDownloadListener(DownloadListener downloadListener);
-    void setEnabled(boolean enabled);
+public interface DownloadListener {
+    void onDownloadStart(String torrentFile);
+    void onDownloadProgress(String torrentFile, int progress);
+    void onDownloadEnd(String torrentFile, int downloadState);
 }

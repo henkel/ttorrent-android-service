@@ -32,6 +32,7 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
+import de.sulaco.bittorrent.service.DownloadListener;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;
 import de.sulaco.bittorrent.service.intent.DownloadEndBroadcast;
 import de.sulaco.bittorrent.service.intent.DownloadProgressBroadcast;

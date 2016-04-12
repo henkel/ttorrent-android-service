@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent;
+package de.sulaco.bittorrent.service.downloader;
 
-public interface DownloadListener {
-    void onDownloadStart(String torrentFile);
-    void onDownloadProgress(String torrentFile, int progress);
-    void onDownloadEnd(String torrentFile, int downloadState);
+import de.sulaco.bittorrent.service.DownloadListener;
+
+public interface Downloader {
+    void download(String torrentFile, String destinationDirectory);
+    void setDownloadListener(DownloadListener downloadListener);
+    void setEnabled(boolean enabled);
 }

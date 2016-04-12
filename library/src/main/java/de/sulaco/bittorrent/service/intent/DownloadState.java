@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent;
+package de.sulaco.bittorrent.service.intent;
 
 public final class DownloadState {
     public final static int COMPLETED = 1;

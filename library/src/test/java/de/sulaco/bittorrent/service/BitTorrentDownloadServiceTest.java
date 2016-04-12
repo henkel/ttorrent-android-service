@@ -28,10 +28,10 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import de.sulaco.bittorrent.DownloadListener;
 import de.sulaco.bittorrent.service.intent.AbortRequest;
 import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;
+import de.sulaco.bittorrent.service.downloader.Downloader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

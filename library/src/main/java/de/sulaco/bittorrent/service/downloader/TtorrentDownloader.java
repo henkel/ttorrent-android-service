@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service.ttorrent;
+package de.sulaco.bittorrent.service.downloader;
 
 import android.util.Log;
 
@@ -27,9 +27,8 @@ import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.sulaco.bittorrent.DownloadListener;
-import de.sulaco.bittorrent.DownloadState;
-import de.sulaco.bittorrent.service.Downloader;
+import de.sulaco.bittorrent.service.DownloadListener;
+import de.sulaco.bittorrent.service.intent.DownloadState;
 
 import static de.sulaco.bittorrent.service.util.RequireNonNull.requireNonNull;
 

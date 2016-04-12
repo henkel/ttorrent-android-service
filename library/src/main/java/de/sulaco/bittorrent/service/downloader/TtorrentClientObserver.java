@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service.ttorrent;
+package de.sulaco.bittorrent.service.downloader;
 
 import com.turn.ttorrent.client.Client;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import de.sulaco.bittorrent.DownloadState;
+import de.sulaco.bittorrent.service.intent.DownloadState;
 
 class TtorrentClientObserver {
     private long nameTimeOfLastActivity;

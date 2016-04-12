@@ -29,9 +29,9 @@ import android.widget.Toast;
 import java.io.File;
 
 import de.sulaco.bittorrent.BitTorrentDownloadManager;
-import de.sulaco.bittorrent.DownloadListener;
+import de.sulaco.bittorrent.service.DownloadListener;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;
-import de.sulaco.bittorrent.DownloadState;
+import de.sulaco.bittorrent.service.intent.DownloadState;
 
 public class MainActivity extends Activity implements DownloadListener {
     public static String TAG = "MainActivity";
