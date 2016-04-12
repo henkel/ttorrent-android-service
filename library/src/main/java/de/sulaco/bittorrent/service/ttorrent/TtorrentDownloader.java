@@ -16,7 +16,6 @@
 
 package de.sulaco.bittorrent.service.ttorrent;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.turn.ttorrent.client.Client;
@@ -32,11 +31,13 @@ import de.sulaco.bittorrent.DownloadListener;
 import de.sulaco.bittorrent.DownloadState;
 import de.sulaco.bittorrent.service.Downloader;
 
+import static de.sulaco.bittorrent.service.util.RequireNonNull.requireNonNull;
+
 public class TtorrentDownloader implements Downloader {
 
     public final static String TAG = "TtorrentDownloader";
 
-    private final static DownloadListener DUMMY = new DownloadListener() {
+    private final static DownloadListener EMPTY_LISTENER = new DownloadListener() {
         @Override
         public void onDownloadStart(String torrentFile) {
         }
@@ -50,16 +51,19 @@ public class TtorrentDownloader implements Downloader {
         }
     };
 
-    private DownloadListener downloadListener = DUMMY;
-    private final TtorrentClientObserver ttorrentClientObserver = new TtorrentClientObserver();
-    private volatile int progress;
-    private long timeoutMillis = 0;
-
     private class DownloadException extends RuntimeException {
-        public DownloadException (String message) {
-            super (message);
+        private final int reason;
+        public DownloadException (int reason) {
+            this.reason = reason;
+        }
+        public int getReason() {
+            return reason;
         }
     }
+
+    private DownloadListener downloadListener = EMPTY_LISTENER;
+    private final TtorrentClientObserver ttorrentClientObserver = new TtorrentClientObserver();
+    private long timeoutMillis = 0;
 
     public TtorrentDownloader() {
     }
@@ -70,7 +74,7 @@ public class TtorrentDownloader implements Downloader {
 
     @Override
     public synchronized void setDownloadListener(DownloadListener downloadListener) {
-        this.downloadListener = downloadListener != null ? downloadListener : DUMMY;
+        this.downloadListener = downloadListener != null ? downloadListener : EMPTY_LISTENER;
     }
 
     @Override
@@ -83,63 +87,39 @@ public class TtorrentDownloader implements Downloader {
             final String torrentFile,
             final String destinationDirectory) {
 
+        requireNonNull(torrentFile, "torrentFile must not be null");
+        requireNonNull(destinationDirectory, "destinationDirectory must not be null");
+
         try {
-            notifyDownloadStart(torrentFile);
-            File destinationDir = getWriteableDestination(torrentFile, destinationDirectory);
+            downloadListener.onDownloadStart(torrentFile);
+            File destinationDir = new File(destinationDirectory);
+            validateDestination(destinationDir);
             Torrent torrent = loadTorrent(torrentFile);
-            downloadTorrent(torrentFile, destinationDir, torrent);
+            Observer clientObserver = createClientObserver(torrentFile);
+            Client client = createClient(torrent, destinationDir, clientObserver);
+            int downloadState = downloadContent(client);
+            downloadListener.onDownloadEnd(torrentFile, downloadState);
         }
         catch (DownloadException e) {
-            Log.w(TAG, e.getMessage());
+            downloadListener.onDownloadEnd(torrentFile, e.getReason());
         }
     }
 
-    @Nullable
-    private void notifyDownloadStart(String torrentFile) throws DownloadException {
-        if (torrentFile == null) throw new DownloadException("torrentFile == null");
-        downloadListener.onDownloadStart(torrentFile);
+    private void validateDestination(File destination) {
+        if (!destination.isDirectory()) {
+            Log.w(TAG, "destination is not a directory");
+            throw new DownloadException(DownloadState.ERROR_DESTINATION_DIR);
+        }
+        if (!destination.canWrite()) {
+            Log.w(TAG, "destination cannot be written");
+            throw new DownloadException(DownloadState.ERROR_DESTINATION_DIR);
+        }
     }
 
-    @Nullable
-    private File getWriteableDestination(String torrentFile, String destinationDirectory) {
-        if (destinationDirectory == null) {
-            downloadListener.onDownloadEnd(torrentFile, DownloadState.ERROR_DESTINATION_DIR);
-            throw new DownloadException("destinationDirectory == null");
-        }
-        File destination = new File(destinationDirectory);
-        if (!destination.isDirectory() || !destination.canWrite()) {
-            downloadListener.onDownloadEnd(torrentFile, DownloadState.ERROR_DESTINATION_DIR);
-            throw new DownloadException("destination is not a directory or cannot be written");
-        }
-        return destination;
-    }
+    private Observer createClientObserver(final String torrentFile) {
+        return new Observer() {
+            int progress = 0;
 
-    @Nullable
-    private Torrent loadTorrent(String torrentFile) {
-        Torrent torrent;
-        try {
-            torrent = Torrent.load(new File(torrentFile));
-        } catch (Exception e) {
-            downloadListener.onDownloadEnd(torrentFile, DownloadState.ERROR_TORRENT_FILE);
-            throw new DownloadException("error loading torrent file");
-        }
-        return torrent;
-    }
-
-    private void downloadTorrent(final String torrentFile, File destination, Torrent torrent) {
-        Client client;
-
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            client = new Client(inetAddress, new SharedTorrent(torrent, destination));
-        } catch (Exception e) {
-            downloadListener.onDownloadEnd(torrentFile, DownloadState.ERROR);
-            throw new DownloadException("error creating torrent client");
-        }
-
-        progress = 0;
-
-        client.addObserver(new Observer() {
             @Override
             public void update(Observable observable, Object data) {
                 Client client = (Client) observable;
@@ -150,12 +130,37 @@ public class TtorrentDownloader implements Downloader {
                     downloadListener.onDownloadProgress(torrentFile, progress);
                 }
             }
-        });
+        };
+    }
+
+    private Torrent loadTorrent(String torrentFile) {
+        try {
+            return Torrent.load(new File(torrentFile));
+        } catch (Exception e) {
+            Log.w(TAG, "error loading torrent file");
+            throw new DownloadException(DownloadState.ERROR_TORRENT_FILE);
+        }
+    }
+
+    private Client createClient(Torrent torrent, File destination, Observer observer) {
+        Client client;
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            client = new Client(inetAddress, new SharedTorrent(torrent, destination));
+        } catch (Exception e) {
+            Log.w(TAG, "error creating torrent client");
+            throw new DownloadException(DownloadState.ERROR);
+        }
+        client.addObserver(observer);
+        return client;
+    }
+
+    private int downloadContent(Client client) {
         client.download();
         int downloadState = ttorrentClientObserver.waitForCompletionOrTimeout(
                 client,
                 timeoutMillis);
         client.stop();
-        downloadListener.onDownloadEnd(torrentFile, downloadState);
+        return downloadState;
     }
 }

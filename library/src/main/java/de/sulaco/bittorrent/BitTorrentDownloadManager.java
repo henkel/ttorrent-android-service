@@ -26,6 +26,8 @@ import de.sulaco.bittorrent.service.intent.AbortRequest;
 import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;
 
+import static de.sulaco.bittorrent.service.util.RequireNonNull.requireNonNull;
+
 public class BitTorrentDownloadManager {
 
     private Context context;
@@ -48,16 +50,12 @@ public class BitTorrentDownloadManager {
     };
 
     public BitTorrentDownloadManager(Context context) {
-        if (context == null) {
-            throw new NullPointerException("context must not be null");
-        }
+        requireNonNull(context, "context must not be null");
         this.context = context;
     }
 
     public void registerDownloadListener(DownloadListener listener) {
-        if (listener == null) {
-            throw new NullPointerException("listener must not be null");
-        }
+        requireNonNull(listener, "listener must not be null");
         if (downloadListener != null) {
             throw new IllegalStateException("download listener is already registered");
         }

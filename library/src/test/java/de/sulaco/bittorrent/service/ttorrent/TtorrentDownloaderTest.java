@@ -45,6 +45,7 @@ import de.sulaco.bittorrent.DownloadListener;
 import de.sulaco.bittorrent.DownloadState;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -88,7 +89,11 @@ public final class TtorrentDownloaderTest {
         TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
         ttorrentDownloader.setDownloadListener(downloadListener);
-        ttorrentDownloader.download(null, "dir");
+        try {
+            ttorrentDownloader.download(null, "dir");
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expectedException) {
+        }
         Mockito.verify(downloadListener, Mockito.times(0)).onDownloadStart(Mockito.anyString());
     }
 
@@ -97,9 +102,12 @@ public final class TtorrentDownloaderTest {
         TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
         ttorrentDownloader.setDownloadListener(downloadListener);
-        ttorrentDownloader.download(TORRENT_FILE, null);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
+        try {
+            ttorrentDownloader.download(TORRENT_FILE, null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expectedException) {
+        }
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadStart(TORRENT_FILE);
     }
 
     @Test
