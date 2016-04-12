@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
 import de.sulaco.bittorrent.DownloadListener;
+import de.sulaco.bittorrent.service.intent.DownloadEndBroadcast;
+import de.sulaco.bittorrent.service.intent.DownloadProgressBroadcast;
 
 class LocalBroadcaster implements DownloadListener {
 

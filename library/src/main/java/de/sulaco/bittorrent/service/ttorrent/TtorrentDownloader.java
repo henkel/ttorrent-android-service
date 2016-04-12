@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service;
+package de.sulaco.bittorrent.service.ttorrent;
 
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -30,8 +30,9 @@ import java.util.Observer;
 
 import de.sulaco.bittorrent.DownloadListener;
 import de.sulaco.bittorrent.DownloadState;
+import de.sulaco.bittorrent.service.Downloader;
 
-class TtorrentDownloader implements Downloader {
+public class TtorrentDownloader implements Downloader {
 
     public final static String TAG = "TtorrentDownloader";
 

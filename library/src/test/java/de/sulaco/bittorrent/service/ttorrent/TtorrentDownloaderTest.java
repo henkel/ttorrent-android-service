@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service;
+package de.sulaco.bittorrent.service.ttorrent;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
@@ -44,7 +44,6 @@ import java.util.Collection;
 import de.sulaco.bittorrent.DownloadListener;
 import de.sulaco.bittorrent.DownloadState;
 
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)

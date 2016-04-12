@@ -17,8 +17,10 @@
 package de.sulaco.bittorrent.service;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
+
+import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.service.ttorrent.TtorrentDownloader;
 
 /**
  * <p/>
@@ -37,14 +39,14 @@ public class BitTorrentDownloadService extends IntentService {
 
     public BitTorrentDownloadService() {
         super("BitTorrentDownload");
-        setDownloader(new TtorrentDownloader());
+        attachDownloader(new TtorrentDownloader());
     }
 
     synchronized boolean isAbortPending() {
         return pendingAbortCount > 0;
     }
 
-    void setDownloader(Downloader downloader) {
+    void attachDownloader(Downloader downloader) {
         this.downloader = downloader;
         this.downloader.setDownloadListener(new LocalBroadcaster(this));
     }

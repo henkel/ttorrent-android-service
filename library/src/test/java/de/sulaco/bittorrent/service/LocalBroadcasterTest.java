@@ -31,6 +31,10 @@ import org.robolectric.shadows.support.v4.Shadows;
 
 import java.util.List;
 
+import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.service.intent.DownloadEndBroadcast;
+import de.sulaco.bittorrent.service.intent.DownloadProgressBroadcast;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 

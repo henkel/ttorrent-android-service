@@ -32,10 +32,10 @@ import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.support.v4.ShadowLocalBroadcastManager;
 import org.robolectric.shadows.support.v4.Shadows;
 
-import de.sulaco.bittorrent.service.DownloadRequest;
-import de.sulaco.bittorrent.service.DownloadEndBroadcast;
-import de.sulaco.bittorrent.service.DownloadProgressBroadcast;
-import de.sulaco.bittorrent.service.AbortRequest;
+import de.sulaco.bittorrent.service.intent.DownloadRequest;
+import de.sulaco.bittorrent.service.intent.DownloadEndBroadcast;
+import de.sulaco.bittorrent.service.intent.DownloadProgressBroadcast;
+import de.sulaco.bittorrent.service.intent.AbortRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;

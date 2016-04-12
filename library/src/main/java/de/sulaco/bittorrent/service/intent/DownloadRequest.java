@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service;
+package de.sulaco.bittorrent.service.intent;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import de.sulaco.bittorrent.service.BitTorrentDownloadService;
 
 public class DownloadRequest {
     private Uri torrentFile;

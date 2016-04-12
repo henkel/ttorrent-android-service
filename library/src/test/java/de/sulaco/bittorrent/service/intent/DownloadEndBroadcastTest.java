@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.sulaco.bittorrent.service;
+package de.sulaco.bittorrent.service.intent;
 
 import android.content.Intent;
 
@@ -24,6 +24,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+
+import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.service.intent.DownloadEndBroadcast;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;

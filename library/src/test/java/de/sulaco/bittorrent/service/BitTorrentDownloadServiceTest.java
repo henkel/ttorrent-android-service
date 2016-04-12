@@ -29,6 +29,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import de.sulaco.bittorrent.DownloadListener;
+import de.sulaco.bittorrent.service.intent.AbortRequest;
+import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
+import de.sulaco.bittorrent.service.intent.DownloadRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +44,7 @@ public class BitTorrentDownloadServiceTest {
     public void testConstructionDestruction() {
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
         bitTorrentDownloadService.onDestroy();
@@ -56,7 +59,7 @@ public class BitTorrentDownloadServiceTest {
         final String destinationDirectory = "dir";
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent downloadIntent = new DownloadRequest()
                 .setTorrentFile(Uri.parse(torrentFile))
@@ -76,7 +79,7 @@ public class BitTorrentDownloadServiceTest {
     public void testAbort() {
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent abortIntent = AbortRequest.createIntent(RuntimeEnvironment.application);
         assertThat(bitTorrentDownloadService.isAbortPending()).isFalse();
@@ -98,7 +101,7 @@ public class BitTorrentDownloadServiceTest {
         final String destinationDirectoryTwo = "dir2";
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent downloadIntentOne = new DownloadRequest()
                 .setTorrentFile(Uri.parse(torrentFileOne))
@@ -138,7 +141,7 @@ public class BitTorrentDownloadServiceTest {
         final String destinationDirectoryTwo = "dir2";
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent downloadIntentOne = new DownloadRequest()
                 .setTorrentFile(Uri.parse(torrentFileOne))
@@ -179,7 +182,7 @@ public class BitTorrentDownloadServiceTest {
         final String destinationDirectoryTwo = "dir2";
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent downloadIntentOne = new DownloadRequest()
                 .setTorrentFile(Uri.parse(torrentFileOne))
@@ -218,7 +221,7 @@ public class BitTorrentDownloadServiceTest {
         final String destinationDirectory = "dir";
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         Intent downloadIntent = new DownloadRequest()
                 .setTorrentFile(Uri.parse(torrentFile))
@@ -252,7 +255,7 @@ public class BitTorrentDownloadServiceTest {
         intent.setAction(Intent.ACTION_VIEW);
         Downloader downloader = Mockito.mock(Downloader.class);
         BitTorrentDownloadService bitTorrentDownloadService = new BitTorrentDownloadService();
-        bitTorrentDownloadService.setDownloader(downloader);
+        bitTorrentDownloadService.attachDownloader(downloader);
         bitTorrentDownloadService.onCreate();
         bitTorrentDownloadService.onStartCommand(intent, 0, 0);
         bitTorrentDownloadService.onHandleIntent(intent);
