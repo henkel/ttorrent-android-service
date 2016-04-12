@@ -47,7 +47,7 @@ class LocalBroadcaster implements DownloadListener {
         broadcast(DownloadEndBroadcast.createIntent(torrentFile, downloadState));
     }
 
-    void broadcast(Intent intent) {
+    private void broadcast(Intent intent) {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
