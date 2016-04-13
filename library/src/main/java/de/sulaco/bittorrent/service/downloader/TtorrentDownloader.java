@@ -27,7 +27,6 @@ import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
 
-import de.sulaco.bittorrent.service.DownloadListener;
 import de.sulaco.bittorrent.service.intent.DownloadState;
 
 import static de.sulaco.bittorrent.service.util.RequireNonNull.requireNonNull;
@@ -85,23 +84,25 @@ public class TtorrentDownloader implements Downloader {
     public synchronized void download(
             final String torrentFile,
             final String destinationDirectory) {
-
         requireNonNull(torrentFile, "torrentFile must not be null");
         requireNonNull(destinationDirectory, "destinationDirectory must not be null");
-
         try {
             downloadListener.onDownloadStart(torrentFile);
-            File destinationDir = new File(destinationDirectory);
-            validateDestination(destinationDir);
-            Torrent torrent = loadTorrent(torrentFile);
-            Observer clientObserver = createClientObserver(torrentFile);
-            Client client = createClient(torrent, destinationDir, clientObserver);
-            int downloadState = downloadContent(client);
+            int downloadState = tryDownload(torrentFile, destinationDirectory);
             downloadListener.onDownloadEnd(torrentFile, downloadState);
         }
         catch (DownloadException e) {
             downloadListener.onDownloadEnd(torrentFile, e.getReason());
         }
+    }
+
+    private int tryDownload(String torrentFile, String destinationDirectory) {
+        File destinationDir = new File(destinationDirectory);
+        validateDestination(destinationDir);
+        Torrent torrent = loadTorrent(torrentFile);
+        Observer clientObserver = createClientObserver(torrentFile);
+        Client client = createClient(torrent, destinationDir, clientObserver);
+        return downloadContent(client);
     }
 
     private void validateDestination(File destination) {
@@ -117,13 +118,12 @@ public class TtorrentDownloader implements Downloader {
 
     private Observer createClientObserver(final String torrentFile) {
         return new Observer() {
-            int progress = 0;
+            private int progress = 0;
 
             @Override
             public void update(Observable observable, Object data) {
                 Client client = (Client) observable;
                 float completion = client.getTorrent().getCompletion();
-
                 if ((int) completion >= progress + 1) {
                     progress = (int) completion;
                     downloadListener.onDownloadProgress(torrentFile, progress);

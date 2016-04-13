@@ -42,7 +42,7 @@ class TtorrentClientObserver {
         nameTimeOfLastActivity = System.nanoTime();
 
         client.addObserver(new Observer() {
-            float lastCompletion = -1.0f;
+            private float lastCompletion = -1.0f;
 
             private boolean isInactive(Client client, Client.ClientState clientState) {
 

@@ -41,7 +41,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 
-import de.sulaco.bittorrent.service.DownloadListener;
 import de.sulaco.bittorrent.service.intent.DownloadState;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-import de.sulaco.bittorrent.service.DownloadListener;
+import de.sulaco.bittorrent.service.downloader.DownloadListener;
 import de.sulaco.bittorrent.service.intent.AbortRequest;
 import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;

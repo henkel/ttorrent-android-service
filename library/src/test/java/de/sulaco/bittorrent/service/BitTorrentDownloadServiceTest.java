@@ -28,6 +28,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import de.sulaco.bittorrent.service.downloader.DownloadListener;
 import de.sulaco.bittorrent.service.intent.AbortRequest;
 import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;

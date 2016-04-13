@@ -16,8 +16,6 @@
 
 package de.sulaco.bittorrent.service.downloader;
 
-import de.sulaco.bittorrent.service.DownloadListener;
-
 public interface Downloader {
     void download(String torrentFile, String destinationDirectory);
     void setDownloadListener(DownloadListener downloadListener);

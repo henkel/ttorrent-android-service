@@ -29,7 +29,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import de.sulaco.bittorrent.BitTorrentDownloadManager;
-import de.sulaco.bittorrent.service.DownloadListener;
+import de.sulaco.bittorrent.service.downloader.DownloadListener;
 import de.sulaco.bittorrent.service.intent.DownloadRequest;
 import de.sulaco.bittorrent.service.intent.DownloadState;
 
