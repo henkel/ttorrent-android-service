@@ -16,8 +16,6 @@
 
 package de.sulaco.bittorrent.service.downloader;
 
-import android.util.Log;
-
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
@@ -32,8 +30,6 @@ import de.sulaco.bittorrent.service.intent.DownloadState;
 import static de.sulaco.bittorrent.service.util.RequireNonNull.requireNonNull;
 
 public class TtorrentDownloader implements Downloader {
-
-    public final static String TAG = "TtorrentDownloader";
 
     private final static DownloadListener EMPTY_LISTENER = new DownloadListener() {
         @Override
@@ -106,13 +102,14 @@ public class TtorrentDownloader implements Downloader {
     }
 
     private void validateDestination(File destination) {
+        if (!destination.exists()) {
+            throw new DownloadException(DownloadState.ERROR_DESTINATION_NOT_FOUND);
+        }
         if (!destination.isDirectory()) {
-            Log.w(TAG, "destination is not a directory");
-            throw new DownloadException(DownloadState.ERROR_DESTINATION_DIR);
+            throw new DownloadException(DownloadState.ERROR_DESTINATION_IS_NOT_A_DIRECTORY);
         }
         if (!destination.canWrite()) {
-            Log.w(TAG, "destination cannot be written");
-            throw new DownloadException(DownloadState.ERROR_DESTINATION_DIR);
+            throw new DownloadException(DownloadState.ERROR_DESTINATION_IS_NOT_WRITEABLE);
         }
     }
 
@@ -133,11 +130,14 @@ public class TtorrentDownloader implements Downloader {
     }
 
     private Torrent loadTorrent(String torrentFile) {
+        File file = new File(torrentFile);
+        if (!file.exists()) {
+            throw new DownloadException(DownloadState.ERROR_TORRENT_FILE_NOT_FOUND);
+        }
         try {
             return Torrent.load(new File(torrentFile));
         } catch (Exception e) {
-            Log.w(TAG, "error loading torrent file");
-            throw new DownloadException(DownloadState.ERROR_TORRENT_FILE);
+            throw new DownloadException(DownloadState.ERROR_LOADING_TORRENT_FILE);
         }
     }
 
@@ -147,7 +147,6 @@ public class TtorrentDownloader implements Downloader {
             InetAddress inetAddress = InetAddress.getLocalHost();
             client = new Client(inetAddress, new SharedTorrent(torrent, destination));
         } catch (Exception e) {
-            Log.w(TAG, "error creating torrent client");
             throw new DownloadException(DownloadState.ERROR);
         }
         client.addObserver(observer);

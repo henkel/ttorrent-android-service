@@ -21,6 +21,9 @@ public final class DownloadState {
     public final static int ABORTED = 2;
     public final static int TIMED_OUT = 3;
     public final static int ERROR = 4;
-    public final static int ERROR_TORRENT_FILE = 5;
-    public final static int ERROR_DESTINATION_DIR = 6;
+    public static final int ERROR_TORRENT_FILE_NOT_FOUND = 5;
+    public final static int ERROR_LOADING_TORRENT_FILE = 6;
+    public static final int ERROR_DESTINATION_NOT_FOUND = 7;
+    public final static int ERROR_DESTINATION_IS_NOT_A_DIRECTORY = 8;
+    public final static int ERROR_DESTINATION_IS_NOT_WRITEABLE = 9;
 }

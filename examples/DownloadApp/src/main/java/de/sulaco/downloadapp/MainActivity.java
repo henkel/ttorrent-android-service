@@ -134,10 +134,16 @@ public class MainActivity extends Activity implements DownloadListener {
                 return "TIMED_OUT";
             case DownloadState.ERROR:
                 return "ERROR";
-            case DownloadState.ERROR_TORRENT_FILE:
-                return "ERROR_TORRENT_FILE";
-            case DownloadState.ERROR_DESTINATION_DIR:
-                return "ERROR_DESTINATION_DIR";
+            case DownloadState.ERROR_TORRENT_FILE_NOT_FOUND:
+                return "ERROR_TORRENT_FILE_NOT_FOUND";
+            case DownloadState.ERROR_LOADING_TORRENT_FILE:
+                return "ERROR_LOADING_TORRENT_FILE";
+            case DownloadState.ERROR_DESTINATION_NOT_FOUND:
+                return "ERROR_DESTINATION_NOT_FOUND";
+            case DownloadState.ERROR_DESTINATION_IS_NOT_A_DIRECTORY:
+                return "ERROR_DESTINATION_IS_NOT_A_DIRECTORY";
+            case DownloadState.ERROR_DESTINATION_IS_NOT_WRITEABLE:
+                return "ERROR_DESTINATION_IS_NOT_WRITEABLE";
             default:
                 throw new IllegalArgumentException("invalid downloadState");
         }

@@ -117,7 +117,7 @@ public final class TtorrentDownloaderTest {
         ttorrentDownloader.setDownloadListener(downloadListener);
         ttorrentDownloader.download(torrentFile, TEMPORARY_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(torrentFile);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, DownloadState.ERROR_TORRENT_FILE);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(torrentFile, DownloadState.ERROR_TORRENT_FILE_NOT_FOUND);
     }
 
     @Test
@@ -129,7 +129,19 @@ public final class TtorrentDownloaderTest {
         ttorrentDownloader.download(TORRENT_FILE, destinationDirectory);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
         Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_NOT_FOUND);
+    }
+
+    @Test
+    public void testDownloadDestinationIsNotADirectory() {
+        final String destinationDirectory = TORRENT_FILE;
+        TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
+        DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
+        ttorrentDownloader.setDownloadListener(downloadListener);
+        ttorrentDownloader.download(TORRENT_FILE, destinationDirectory);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
+        Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_IS_NOT_A_DIRECTORY);
     }
 
     @Test
@@ -143,7 +155,7 @@ public final class TtorrentDownloaderTest {
         assertThat(directory.setWritable(true)).isTrue();
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(TORRENT_FILE);
         Mockito.verify(downloadListener, Mockito.times(0)).onDownloadProgress(Mockito.anyString(), Mockito.anyInt());
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_DIR);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(TORRENT_FILE, DownloadState.ERROR_DESTINATION_IS_NOT_WRITEABLE);
     }
 
     @Test
@@ -164,7 +176,7 @@ public final class TtorrentDownloaderTest {
         ttorrentDownloader.setDownloadListener(downloadListener);
         ttorrentDownloader.download(CORRUPT_TORRENT_FILE, CONTENT_DIRECTORY);
         Mockito.verify(downloadListener, Mockito.times(1)).onDownloadStart(CORRUPT_TORRENT_FILE);
-        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(CORRUPT_TORRENT_FILE, DownloadState.ERROR_TORRENT_FILE);
+        Mockito.verify(downloadListener, Mockito.times(1)).onDownloadEnd(CORRUPT_TORRENT_FILE, DownloadState.ERROR_LOADING_TORRENT_FILE);
     }
 
     @Test
