@@ -19,9 +19,9 @@ package de.sulaco.bittorrent.service;
 import android.app.IntentService;
 import android.content.Intent;
 
-import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 import de.sulaco.bittorrent.service.downloader.Downloader;
 import de.sulaco.bittorrent.service.downloader.TtorrentDownloader;
+import de.sulaco.bittorrent.service.intent.BitTorrentIntentConstants;
 
 /**
  * <p/>
@@ -68,15 +68,13 @@ public class BitTorrentDownloadService extends IntentService {
         if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_ABORT_DOWNLOAD)) {
             synchronized (this) {
                 pendingAbortCount -= 1;
-                if(pendingAbortCount == 0) {
+                if (pendingAbortCount == 0) {
                     downloader.setEnabled(true);
                 }
             }
-        }
-        else if (isAbortPending()) {
+        } else if (isAbortPending()) {
             // skip intent
-        }
-        else if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_START_DOWNLOAD)) {
+        } else if (intent.getAction().equals(BitTorrentIntentConstants.ACTION_START_DOWNLOAD)) {
             final String torrentFile = intent.getStringExtra(
                     BitTorrentIntentConstants.EXTRA_TORRENT_FILE);
             final String destinationDirectory = intent.getStringExtra(

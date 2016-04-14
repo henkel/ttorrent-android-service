@@ -192,7 +192,7 @@ public final class TtorrentDownloaderTest {
     }
 
     @Test
-    public void testDownloadNoTrackerCancel() {
+    public void testCancelDownloadWithoutTimeout() {
         final TtorrentDownloader ttorrentDownloader = new TtorrentDownloader();
         final DownloadListener downloadListener = Mockito.mock(DownloadListener.class);
         ttorrentDownloader.setDownloadListener(downloadListener);

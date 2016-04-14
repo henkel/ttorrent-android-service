@@ -16,6 +16,8 @@
 
 package de.sulaco.bittorrent.service.downloader;
 
+import android.support.annotation.NonNull;
+
 import com.turn.ttorrent.client.Client;
 
 import java.util.Observable;
@@ -28,79 +30,99 @@ class TtorrentClientObserver {
     private boolean isEnabled = true;
 
     public synchronized void setEnabled(boolean enabled) {
-        if(enabled) {
-            isEnabled = true;
+        isEnabled = enabled;
+        notifyAll();
+    }
+
+    /**
+     * Returns DownloadState.ABORTED if ClientObserver is disabled
+     */
+    public synchronized int waitForCompletionOrTimeout(Client client, long timeoutMillis) {
+        boolean timedOut = false;
+        nameTimeOfLastActivity = System.nanoTime();
+        client.addObserver(createActivityObserver());
+        try {
+            while (isEnabled && !isClientDone(client) && !timedOut) {
+                timedOut = waitForNextActivity(timeoutMillis);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-        else {
-            isEnabled = false;
-            notifyAll();
+        return determineDownloadState(client, timedOut);
+    }
+
+    private int determineDownloadState(Client client, boolean timedOut) {
+        Client.ClientState clientState = client.getState();
+        if (clientState == Client.ClientState.DONE) {
+            return DownloadState.COMPLETED;
+        } else if (clientState == Client.ClientState.ERROR) {
+            return DownloadState.ERROR;
+        } else if (timedOut) {
+            return DownloadState.TIMED_OUT;
+        } else {
+            return DownloadState.ABORTED;
         }
     }
 
-    /** Returns DownloadState.ABORTED if ClientObserver is disabled */
-    public synchronized int waitForCompletionOrTimeout(Client client, long timeoutMillis) {
-        nameTimeOfLastActivity = System.nanoTime();
+    private boolean waitForNextActivity(long timeoutMillis) throws InterruptedException {
+        if (timeoutMillis == 0) {
+            waitForeverForNextActivity();
+            return false;
+        } else {
+            return waitTillTimeoutForNextActivity(timeoutMillis);
+        }
+    }
 
-        client.addObserver(new Observer() {
+    private boolean waitTillTimeoutForNextActivity(long timeoutMillis) throws InterruptedException {
+        long millisTillTimeout = getMillisUntilTimeout(timeoutMillis);
+        if (millisTillTimeout > 0) {
+            wait(millisTillTimeout);
+            return false;
+        } else {
+            // timeout reached
+            return true;
+        }
+    }
+
+    private void waitForeverForNextActivity() throws InterruptedException {
+        wait();
+    }
+
+    boolean isClientDone(Client client) {
+        Client.ClientState state = client.getState();
+        return state == Client.ClientState.DONE || state == Client.ClientState.ERROR;
+    }
+
+    @NonNull
+    private Observer createActivityObserver() {
+        return new Observer() {
             private float lastCompletion = -1.0f;
 
             private boolean isInactive(Client client, Client.ClientState clientState) {
-
                 if (clientState != Client.ClientState.SHARING) {
                     return false;
                 }
-
                 float completion = client.getTorrent().getCompletion();
-
                 if (completion > lastCompletion) {
                     lastCompletion = completion;
                     return false;
                 }
-
                 return true;
             }
 
             @Override
             public void update(Observable observable, Object data) {
-
                 if (isInactive((Client) observable, (Client.ClientState) data)) {
                     return;
                 }
-
-                synchronized (TtorrentClientObserver.this) {
-                    nameTimeOfLastActivity = System.nanoTime();
-                    TtorrentClientObserver.this.notifyAll();
-                }
+                notifyActivity();
             }
-        });
+        };
+    }
 
-        while (isEnabled && !Thread.currentThread().isInterrupted()) {
-
-            long waitMillis = 0;
-
-            if (timeoutMillis != 0) {
-                waitMillis = getMillisUntilTimeout(timeoutMillis);
-                if (waitMillis <= 0) {
-                    return DownloadState.TIMED_OUT;
-                }
-            }
-
-            try {
-                wait(waitMillis);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
-            Client.ClientState clientState = client.getState();
-
-            if (clientState == Client.ClientState.DONE) {
-                return DownloadState.COMPLETED;
-            } else if (clientState == Client.ClientState.ERROR) {
-                return DownloadState.ERROR;
-            }
-        }
-
-        return DownloadState.ABORTED;
+    private synchronized void notifyActivity() {
+        nameTimeOfLastActivity = System.nanoTime();
+        notifyAll();
     }
 
     private long getMillisUntilTimeout(long timeoutMillis) {
