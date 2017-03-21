@@ -1,7 +1,7 @@
 ttorrent-android-service
 ================================================================
 
-[![Build Status](https://travis-ci.org/henkel/ttorrent-android-service.svg?branch=master)](https://travis-ci.org/henkel/ttorrent-android-service) [![Download](https://api.bintray.com/packages/henkel/maven/ttorrent-android-service/images/download.svg) ](https://bintray.com/henkel/maven/ttorrent-android-service/_latestVersion)
+[![Build Status](https://travis-ci.org/philipphenkel/ttorrent-android-service.svg?branch=master)](https://travis-ci.org/philipphenkel/ttorrent-android-service) [![Download](https://api.bintray.com/packages/henkel/maven/ttorrent-android-service/images/download.svg) ](https://bintray.com/henkel/maven/ttorrent-android-service/_latestVersion)
 
 Description
 -----------
